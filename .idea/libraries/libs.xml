@@ -1,0 +1,63 @@
+<component name="libraryTable">
+  <library name="libs">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/libs/antlr-2.7.7.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/aopalliance-1.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/asm-3.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/asm-commons-3.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/c3p0-0.9.1.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/commons-beanutils-1.8.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/commons-collections-3.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/commons-fileupload-1.3.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/commons-logging-1.1.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/dom4j-1.6.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/ehcache-core-2.4.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/ezmorph-1.0.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/jandex-1.2.2.Final.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/javassist-3.11.0.GA.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/javassist-3.18.1-GA.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/jboss-logging-3.3.0.Final.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/jboss-transaction-api_1.1_spec-1.0.1.Final.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/mchange-commons-java-0.2.3.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/mysql-connector-java-5.1.39-bin.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/slf4j-api-1.7.21.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/slf4j-nop-1.7.21.jar!/" />
+      <root url="jar://$PROJECT_DIR$/extra/xml-apis.jar!/" />
+      <root url="jar://$PROJECT_DIR$/extra/aspectjrt-1.6.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/extra/aspectjweaver-1.6.10.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/spring-aop-4.2.5.RELEASE.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/spring-aspects-4.2.5.RELEASE.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/spring-beans-4.2.5.RELEASE.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/spring-context-4.2.5.RELEASE.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/spring-context-support-4.2.5.RELEASE.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/spring-core-4.2.5.RELEASE.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/spring-expression-4.2.5.RELEASE.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/spring-jdbc-4.2.5.RELEASE.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/spring-orm-4.2.5.RELEASE.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/spring-tx-4.2.5.RELEASE.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/spring-web-4.2.5.RELEASE.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/spring-webmvc-4.2.5.RELEASE.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/commons-io-2.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/commons-lang3-3.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/freemarker-2.3.23.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/ognl-3.1.8.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/struts2-core-2.5.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/struts2-spring-plugin-2.5.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/extra/jsp-api.jar!/" />
+      <root url="jar://$PROJECT_DIR$/extra/servlet-api.jar!/" />
+      <root url="jar://$PROJECT_DIR$/extra/log4j-api-2.6.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/extra/log4j-core-2.6.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/dwr.jar!/" />
+      <root url="jar://$PROJECT_DIR$/extra/jdom.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/commons-dbcp-1.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/commons-pool-1.5.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/struts2-json-plugin-2.5.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/struts2-convention-plugin-2.5.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/extra/javax.mail-1.5.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/mathLib/commons-math3-3.6.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/extra/stanford-corenlp-3.6.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -1,0 +1,43 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+	<link rel="stylesheet" type="text/css" href="styles/simditor.css" />
+	<script type="text/javascript" src="scripts/jquery.min.js"></script>
+	<script type="text/javascript" src="scripts/module.js"></script>
+	<script type="text/javascript" src="scripts/hotkeys.js"></script>
+	<script type="text/javascript" src="scripts/uploader.js"></script>
+	<script type="text/javascript" src="scripts/simditor.js"></script>
+    <title>Title</title>
+</head>
+<body>
+
+<textarea id="editor" placeholder="Balabala" autofocus></textarea>
+<button onclick="show();">显示</button>
+<div class="simditor">
+<div class="simditor-body" id="preview"></div>
+</div>
+
+<script type="text/javascript">
+var preview, editor, mobileToolbar, toolbar;
+Simditor.locale = 'zh-CN';
+toolbar = ['title', 'bold', 'italic', 'underline', 'strikethrough', 'fontScale', 'color', '|', 'ol', 'ul', 'blockquote', 'code', 'table', '|', 'link', 'image', 'hr', '|', 'indent', 'outdent', 'alignment'];
+mobileToolbar = ["bold", "underline", "strikethrough", "color", "ul", "ol"];
+
+editor = new Simditor({
+  textarea: $('#editor'),
+  placeholder: '这里输入文字...',
+  toolbar: toolbar,
+  pasteImage: true,
+  defaultImage: 'images/image.png',
+  upload: location.search === '?upload' ? {
+	url: '/upload'
+  } : false
+});
+function show() {
+    preview = $('#preview');
+    preview.html(editor.getValue())
+}
+</script>
+</body>
+</html>
