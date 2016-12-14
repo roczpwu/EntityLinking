@@ -21,4 +21,10 @@ public class PageAbstBL extends BaseBL {
     public void init() {
         this.dao = pageAbstDAO;
     }
+
+    public String getAbstById(int entityId) {
+        PageAbst pageAbst = (PageAbst) this.pageAbstDAO.fields(PageAbst.Abst).where(PageAbst.EntityId+"='"+entityId+"'").one();
+        if (pageAbst == null) return null;
+        return pageAbst.getAbst();
+    }
 }

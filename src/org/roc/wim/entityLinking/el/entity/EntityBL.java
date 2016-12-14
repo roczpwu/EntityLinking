@@ -30,4 +30,10 @@ public class EntityBL extends BaseBL {
     public void setEntityDAO(EntityDAO entityDAO) {
         this.entityDAO = entityDAO;
     }
+
+    public String getWikiTitleById(int entityId) {
+        Entity entity = (Entity) this.entityDAO.where(Entity.Id+"='"+entityId+"'").fields(Entity.WikiTitle).one();
+        if (entity == null) return null;
+        return entity.getWikiTitle();
+    }
 }

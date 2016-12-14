@@ -33,4 +33,18 @@ public class ContextSimilarityModel {
         int doc_length = mentionContext.length;
         return (float) (cooccurence_number*1.0/doc_length);
     }
+
+    public float calcSimilarity(List<String> mentionContext, List<String> entityContext) {
+        if (mentionContext == null || entityContext == null)
+            return 0.0f;
+        String[] arr1 = new String[mentionContext.size()];
+        String[] arr2 = new String[entityContext.size()];
+        for (int i = 0; i < arr1.length; i++) {
+            arr1[i] = mentionContext.get(i);
+        }
+        for (int i = 0; i < arr2.length; i++) {
+            arr2[i] = entityContext.get(i);
+        }
+        return this.calcSimilarity(arr1, arr2);
+    }
 }

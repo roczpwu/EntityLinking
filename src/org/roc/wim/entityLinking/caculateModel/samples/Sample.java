@@ -6,7 +6,7 @@ import org.apache.commons.math3.analysis.differentiation.DerivativeStructure;
  * example
  */
 public class Sample {
-    public void test() {
+    public static void test() {
         // Function of 1 variable, keep track of 3 derivatives with respect to that variable,
         // use 2.5 as the current value.  Basically, the identity function.
 //        DerivativeStructure x = new DerivativeStructure(1, 3, 0, 2.5);
@@ -26,5 +26,9 @@ public class Sample {
         DerivativeStructure z = new DerivativeStructure(1.0, x, 1.0, y);
         System.out.println("z    = " + z.getValue());
         System.out.println("z'   = " + z.getPartialDerivative(1,0));
+    }
+
+    public static void main(String[] args) {
+        test();
     }
 }
