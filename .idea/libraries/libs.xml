@@ -56,8 +56,13 @@
       <root url="jar://$PROJECT_DIR$/extra/javax.mail-1.5.6.jar!/" />
       <root url="jar://$PROJECT_DIR$/mathLib/commons-math3-3.6.1.jar!/" />
       <root url="jar://$PROJECT_DIR$/extra/stanford-corenlp-3.6.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/extra/weka.jar!/" />
+      <root url="jar://$PROJECT_DIR$/extra/weka-src.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/extra/weka-src.jar!/src/main/java" />
+      <root url="jar://$PROJECT_DIR$/extra/weka-src.jar!/src/test/java" />
+    </SOURCES>
   </library>
 </component>
