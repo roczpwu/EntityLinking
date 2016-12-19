@@ -4,6 +4,10 @@ import com.roc.core.Utils.CountTable;
 import com.roc.core.Utils.StringUtil;
 import org.roc.wim.entityLinking.el.stopWords.StopWords;
 import org.roc.wim.entityLinking.utils.StanfordUtil;
+import org.roc.wim.entityLinking.wiki.doctionary.Dictionary;
+import org.roc.wim.entityLinking.wiki.doctionary.DictionaryBL;
+import org.roc.wim.entityLinking.wiki.page.Page;
+import org.roc.wim.entityLinking.wiki.page.PageBL;
 import org.roc.wim.entityLinking.wiki.pageAbst.PageAbstCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +27,10 @@ import java.util.List;
 public class EntityDiceSimilarityModel {
     @Autowired
     private PageAbstCache pageAbstCache;
+    @Autowired
+    private DictionaryBL dictionaryBL;
+    @Autowired
+    private PageBL pageBL;
 
     public float calcSimilarity(int entityId1, int entityId2) {
         String abst1 = pageAbstCache.get(entityId1);
@@ -49,5 +57,33 @@ public class EntityDiceSimilarityModel {
             }
         }
         return 2.0f * unionCount / (abst1Count + abst2Count);
+    }
+
+    /**
+     * 上下文环境中mention对应实体的相似度
+     * @param entityId
+     * @param mentions
+     * @return
+     */
+    public float calcSimilarity(int entityId, String[] mentions) {
+        if (mentions == null || mentions.length == 0) return  0.0f;
+        float result = 0.0f;
+        for (int i = 0; i < mentions.length; i++) {
+            List<Dictionary> titles = dictionaryBL.getCandidateTitles(mentions[i]);
+            if (titles.size()>0) result += calcSimilarity(entityId, titles.get(0).getId());
+        }
+        return result / mentions.length;
+    }
+
+    /**
+     * 上下文环境中mention对应实体的相似度
+     * @param title
+     * @param mentions
+     * @return
+     */
+    public float calcSimilarity(String title, String[] mentions) {
+        Page page = (Page) pageBL.getByCondition(Page.Page_Title + "='"+title+"'");
+        if (page == null) return 0.0f;
+        return calcSimilarity(page.getPage_id(), mentions);
     }
 }

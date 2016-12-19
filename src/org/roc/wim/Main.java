@@ -4,6 +4,8 @@ import org.roc.wim.entityLinking.BeanFactory;
 import org.roc.wim.entityLinking.caculateModel.entity_entity_similarity.EntityDiceSimilarityModel;
 import org.roc.wim.entityLinking.caculateModel.entity_entity_similarity.EntityLinkSimilarityCache;
 import org.roc.wim.entityLinking.el.entity.EntityDAO;
+import org.roc.wim.entityLinking.expriments.DataSet;
+import org.roc.wim.entityLinking.expriments.Features;
 import org.roc.wim.entityLinking.wiki.doctionary.DictionaryBL;
 
 import java.util.List;
@@ -16,6 +18,9 @@ import java.util.List;
  */
 public class Main {
     public static void main(String[] args) throws Exception {
+
+        DataSet dataSet = (DataSet) BeanFactory.getBean("dataSet");
+        System.out.println(dataSet);
 
         EntityLinkSimilarityCache entityLinkSimilarityCache = (EntityLinkSimilarityCache) BeanFactory.getBean("entityLinkSimilarityCache");
         System.out.println(entityLinkSimilarityCache.get(9878520, 486042));//Chang_Yu-sheng   A-mei

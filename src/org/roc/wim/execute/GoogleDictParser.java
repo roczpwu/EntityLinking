@@ -85,8 +85,9 @@ public class GoogleDictParser {
     private static void getCharacterSet() {
         characterSet = new HashSet<>();
         DocBL docBL = (DocBL) BeanFactory.getBean("docBL");
-        List<Doc> docList = docBL.getList();
-        for (Doc doc : docList) {
+        List<BaseDTO> docList = docBL.getList();
+        for (BaseDTO dto : docList) {
+            Doc doc = (Doc) dto;
             String content = doc.getContent();
             for (char ch : content.toCharArray())
                 characterSet.add(ch);

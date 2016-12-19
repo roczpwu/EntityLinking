@@ -19,6 +19,7 @@ public class Mention extends BaseDTO {
     public static final String StartCharIdx = "startCharIdx";
     public static final String EndCharIdx = "endCharIdx";
     public static final String Name = "name";
+    public static final String NeType = "neType";
     public static final String EntityId = "entityId";
     public static final String WikiTitle = "wikiTitle";
     public static final String Tf = "tf";
@@ -41,6 +42,7 @@ public class Mention extends BaseDTO {
     private int startCharIdx;
     private int endCharIdx;
     private String name;
+    private String neType;
     private int entityId;
     private String wikiTitle;
     private float tf;
@@ -118,6 +120,14 @@ public class Mention extends BaseDTO {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getNeType() {
+        return neType;
+    }
+
+    public void setNeType(String neType) {
+        this.neType = neType;
     }
 
     public int getEntityId() {

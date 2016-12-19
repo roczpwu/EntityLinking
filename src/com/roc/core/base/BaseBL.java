@@ -48,7 +48,7 @@ public abstract class BaseBL {
     /**
      * 得到多条记录
      */
-    public List getList() {
+    public List<BaseDTO> getList() {
         return dao.all();
     }
 
@@ -56,7 +56,7 @@ public abstract class BaseBL {
     /**
      * 得到多条记录
      */
-    public List getListByCondition(Object condition) {
+    public List<BaseDTO> getListByCondition(Object condition) {
         return dao.where(condition).all();
     }
 
