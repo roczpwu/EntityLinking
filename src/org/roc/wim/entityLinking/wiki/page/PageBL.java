@@ -29,4 +29,8 @@ public class PageBL extends BaseBL {
         pageDAO.where(Page.Page_Namespace+"="+page_namespace+" and " + Page.Page_Title + "='"+StringUtil.mysqlEscapeStr(page_title)+"'");
         return (Page) pageDAO.one();
     }
+
+    public Page getPageByTitle(String title) {
+        return get(0, title);
+    }
 }

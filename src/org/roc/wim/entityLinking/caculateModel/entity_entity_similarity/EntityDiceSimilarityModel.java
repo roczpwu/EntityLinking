@@ -4,10 +4,11 @@ import com.roc.core.Utils.CountTable;
 import com.roc.core.Utils.StringUtil;
 import org.roc.wim.entityLinking.el.stopWords.StopWords;
 import org.roc.wim.entityLinking.utils.StanfordUtil;
-import org.roc.wim.entityLinking.wiki.doctionary.Dictionary;
-import org.roc.wim.entityLinking.wiki.doctionary.DictionaryBL;
+import org.roc.wim.entityLinking.wiki.doctionary.Candidate;
+import org.roc.wim.entityLinking.wiki.doctionary.CandidateCache;
 import org.roc.wim.entityLinking.wiki.page.Page;
 import org.roc.wim.entityLinking.wiki.page.PageBL;
+import org.roc.wim.entityLinking.wiki.page.Title2IdCache;
 import org.roc.wim.entityLinking.wiki.pageAbst.PageAbstCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,17 +29,17 @@ public class EntityDiceSimilarityModel {
     @Autowired
     private PageAbstCache pageAbstCache;
     @Autowired
-    private DictionaryBL dictionaryBL;
+    private CandidateCache candidateCache;
     @Autowired
-    private PageBL pageBL;
+    private Title2IdCache title2IdCache;
 
     public float calcSimilarity(int entityId1, int entityId2) {
         String abst1 = pageAbstCache.get(entityId1);
         String abst2 = pageAbstCache.get(entityId2);
         if (StringUtil.isEmpty(abst1) || StringUtil.isEmpty(abst2))
             return 0.0f;
-        List<String> abst1TokenList = StanfordUtil.Tokenize(abst1);
-        List<String> abst2TokenList = StanfordUtil.Tokenize(abst2);
+        String[] abst1TokenList = StanfordUtil.Tokenize(abst1);
+        String[] abst2TokenList = StanfordUtil.Tokenize(abst2);
         CountTable abst1TokenCount = new CountTable();
         int unionCount = 0;
         int abst1Count = 0, abst2Count = 0;
@@ -69,8 +70,8 @@ public class EntityDiceSimilarityModel {
         if (mentions == null || mentions.length == 0) return  0.0f;
         float result = 0.0f;
         for (int i = 0; i < mentions.length; i++) {
-            List<Dictionary> titles = dictionaryBL.getCandidateTitles(mentions[i]);
-            if (titles.size()>0) result += calcSimilarity(entityId, titles.get(0).getId());
+            List<Candidate> titles = candidateCache.get(mentions[i]);
+            if (titles.size()>0) result += calcSimilarity(entityId, titles.get(0).getEntityId());
         }
         return result / mentions.length;
     }
@@ -82,8 +83,7 @@ public class EntityDiceSimilarityModel {
      * @return
      */
     public float calcSimilarity(String title, String[] mentions) {
-        Page page = (Page) pageBL.getByCondition(Page.Page_Title + "='"+title+"'");
-        if (page == null) return 0.0f;
-        return calcSimilarity(page.getPage_id(), mentions);
+        int pageId = title2IdCache.get(title);
+        return calcSimilarity(pageId, mentions);
     }
 }

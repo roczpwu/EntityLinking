@@ -49,6 +49,7 @@ public class Mention extends BaseDTO {
     private float idf;
     private float tfidf;
     private String toeTag;
+    private boolean correctLink;    // 是否正确链接
 
     public int getId() {
         return id;
@@ -176,5 +177,13 @@ public class Mention extends BaseDTO {
 
     public void setToeTag(String toeTag) {
         this.toeTag = toeTag;
+    }
+
+    public boolean isCorrectLink() {
+        return correctLink;
+    }
+
+    public void setCorrectLink(boolean correctLink) {
+        this.correctLink = correctLink;
     }
 }

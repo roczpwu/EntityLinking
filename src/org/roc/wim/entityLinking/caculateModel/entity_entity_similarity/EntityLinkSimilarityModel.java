@@ -5,6 +5,7 @@ import org.roc.wim.entityLinking.wiki.doctionary.Dictionary;
 import org.roc.wim.entityLinking.wiki.entitytoentitylink.EntityLinkCache;
 import org.roc.wim.entityLinking.wiki.page.Page;
 import org.roc.wim.entityLinking.wiki.page.PageBL;
+import org.roc.wim.entityLinking.wiki.page.Title2IdCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,9 +28,9 @@ public class EntityLinkSimilarityModel {
     @Autowired
     private EntityLinkCache entityLinkCache;
     @Autowired
-    private DictionaryBL dictionaryBL;
+    private CandidateCache candidateCache;
     @Autowired
-    private PageBL pageBL;
+    private Title2IdCache title2IdCache;
 
     public float calcSimilarity(int entityId1, int entityId2) {
         Set<Integer> fromEntitySet1 = entityLinkCache.get(entityId1);
@@ -45,6 +46,7 @@ public class EntityLinkSimilarityModel {
         int minSize = Math.min(fromEntitySet1.size(), fromEntitySet2.size());
         float result = (float) (1.0+(Math.log(unionSet.size())-Math.log(maxSize))/(Math.log(totalEntityCount)-Math.log(minSize)));
         if (result < 0) result = 0.0f;
+        if (Float.isNaN(result)) result = 0.0f;
         return result;
     }
 
@@ -58,8 +60,8 @@ public class EntityLinkSimilarityModel {
         if (mentions == null || mentions.length == 0) return  0.0f;
         float result = 0.0f;
         for (int i = 0; i < mentions.length; i++) {
-            List<Dictionary> titles = dictionaryBL.getCandidateTitles(mentions[i]);
-            if (titles.size()>0) result += calcSimilarity(entityId, titles.get(0).getId());
+            List<Candidate> titles = candidateCache.get(mentions[i]);
+            if (titles.size()>0) result += calcSimilarity(entityId, titles.get(0).getEntityId());
         }
         return result / mentions.length;
     }
@@ -71,8 +73,7 @@ public class EntityLinkSimilarityModel {
      * @return
      */
     public float calcSimilarity(String title, String[] mentions) {
-        Page page = (Page) pageBL.getByCondition(Page.Page_Title + "='"+title+"'");
-        if (page == null) return 0.0f;
-        return calcSimilarity(page.getPage_id(), mentions);
+        int pageId = title2IdCache.get(title);
+        return calcSimilarity(pageId, mentions);
     }
 }

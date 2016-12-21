@@ -6,6 +6,9 @@ import org.roc.wim.entityLinking.caculateModel.entity_entity_similarity.EntityLi
 import org.roc.wim.entityLinking.el.entity.EntityDAO;
 import org.roc.wim.entityLinking.expriments.DataSet;
 import org.roc.wim.entityLinking.expriments.Features;
+import org.roc.wim.entityLinking.expriments.Trainer;
+import org.roc.wim.entityLinking.expriments.expriment2.ConfidenceBasedTrainer;
+import org.roc.wim.entityLinking.utils.StanfordUtil;
 import org.roc.wim.entityLinking.wiki.doctionary.DictionaryBL;
 
 import java.util.List;
@@ -19,8 +22,9 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) throws Exception {
 
-        DataSet dataSet = (DataSet) BeanFactory.getBean("dataSet");
-        System.out.println(dataSet);
+        ConfidenceBasedTrainer trainer = (ConfidenceBasedTrainer) BeanFactory.getBean("confidenceBasedTrainer");
+        trainer.initTrainSet(10);
+        System.out.println(trainer);
 
         EntityLinkSimilarityCache entityLinkSimilarityCache = (EntityLinkSimilarityCache) BeanFactory.getBean("entityLinkSimilarityCache");
         System.out.println(entityLinkSimilarityCache.get(9878520, 486042));//Chang_Yu-sheng   A-mei
@@ -28,6 +32,10 @@ public class Main {
         System.out.println(entityLinkSimilarityCache.get(11265359, 2017814));//Vincent_Fang    Xi_Jinping
         System.out.println(entityLinkSimilarityCache.get(95871, 2017814));//Jiang_Zemin    Xi_Jinping
         System.out.println(entityLinkSimilarityCache.get(543675, 2017814));//Jay_Chou    Xi_Jinping
+        System.out.println(entityLinkSimilarityCache.get(3708, 9974));//Brussels    European_Commission
+        System.out.println(entityLinkSimilarityCache.get(3708, 11867));//Brussels    Germany
+
+        System.out.println();
 
         EntityDiceSimilarityModel entityDiceSimilarityModel = (EntityDiceSimilarityModel) BeanFactory.getBean("entityDiceSimilarityModel");
         System.out.println(entityDiceSimilarityModel.calcSimilarity(9878520, 486042));//Chang_Yu-sheng   A-mei
@@ -35,9 +43,11 @@ public class Main {
         System.out.println(entityDiceSimilarityModel.calcSimilarity(11265359, 2017814));//Vincent_Fang    Xi_Jinping
         System.out.println(entityDiceSimilarityModel.calcSimilarity(95871, 2017814));//Jiang_Zemin    Xi_Jinping
         System.out.println(entityDiceSimilarityModel.calcSimilarity(543675, 2017814));//Jay_Chou    Xi_Jinping
+        System.out.println(entityDiceSimilarityModel.calcSimilarity(3708, 9974));//Brussels    European_Commission
+        System.out.println(entityDiceSimilarityModel.calcSimilarity(3708, 11867));//Brussels    Germany
 
-        DictionaryBL dictionaryBL = (DictionaryBL) BeanFactory.getBean("dictionaryBL");
-        List list = dictionaryBL.getCandidateTitles("BILL GATES");
-        System.out.println(list);
+//        DictionaryBL dictionaryBL = (DictionaryBL) BeanFactory.getBean("dictionaryBL");
+//        List list = dictionaryBL.getCandidateTitles("Bill Gates", true);
+//        System.out.println(list);
     }
 }

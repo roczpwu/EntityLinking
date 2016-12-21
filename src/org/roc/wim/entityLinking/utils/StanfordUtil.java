@@ -19,17 +19,18 @@ import java.util.List;
  */
 public class StanfordUtil {
 
-    public static List<String> Tokenize(String setence) {
+    public static String[] Tokenize(String setence) {
         // This option shows loading and using an explicit tokenizer
         if (StringUtil.isEmpty(setence))
-            return new ArrayList<String>();
+            return new String[0];
         TokenizerFactory<CoreLabel> tokenizerFactory =
                 PTBTokenizer.factory(new CoreLabelTokenFactory(), "");
         Tokenizer<CoreLabel> tok = tokenizerFactory.getTokenizer(new StringReader(setence));
         List<CoreLabel> rawWords2 = tok.tokenize();
-        List<String> token_list = new ArrayList<String>();
-        for (CoreLabel coreLabel : rawWords2)
-            token_list.add(coreLabel.toString());
-        return token_list;
+        String[] tokens = new String[rawWords2.size()];
+        for (int i = 0; i < rawWords2.size(); i++) {
+            tokens[i] = rawWords2.get(i).toString();
+        }
+        return tokens;
     }
 }

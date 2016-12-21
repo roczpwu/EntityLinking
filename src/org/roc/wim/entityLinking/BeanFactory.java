@@ -20,4 +20,8 @@ public class BeanFactory {
     public static Object getBean(String name) {
         return ac.getBean(name);
     }
+
+    public static Object getBean(String name, Object args) {
+        return ac.getBean(name, args);
+    }
 }

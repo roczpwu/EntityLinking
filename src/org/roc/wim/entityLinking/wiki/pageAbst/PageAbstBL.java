@@ -27,4 +27,10 @@ public class PageAbstBL extends BaseBL {
         if (pageAbst == null) return null;
         return pageAbst.getAbst();
     }
+
+    public String getAbstByTitle(String wikiTitle) {
+        PageAbst pageAbst = (PageAbst) this.pageAbstDAO.fields(PageAbst.Abst).where(PageAbst.Title+"='"+wikiTitle+"'").one();
+        if (pageAbst == null) return null;
+        return pageAbst.getAbst();
+    }
 }

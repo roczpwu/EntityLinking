@@ -1,5 +1,9 @@
 package org.roc.wim.entityLinking.caculateModel.mention_entity_similarity;
 
+import com.roc.core.Utils.StringUtil;
+import org.roc.wim.entityLinking.wiki.doctionary.Dictionary;
+import org.roc.wim.entityLinking.wiki.doctionary.DictionaryBL;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -10,7 +14,13 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class PriorityProbabilityModel {
+
+    @Autowired
+    private DictionaryBL dictionaryBL;
+
     public float calcSimilarity(String mention, String title) {
-        return 1.0f;
+        Dictionary dictionary = (Dictionary) dictionaryBL.getByCondition(Dictionary.Name+" = '"+StringUtil.mysqlEscapeStr(mention)+"' and "+Dictionary.WikiTitle+" = '"+ StringUtil.mysqlEscapeStr(title)+"'");
+        if (dictionary == null) return 0.0f;
+        return dictionary.getProbOfNameToEntity();
     }
 }

@@ -11,8 +11,9 @@
     <context:component-scan base-package="org.roc"/>
     <context:component-scan base-package="com.roc"/>
 
-    <bean id="features" class="org.roc.wim.entityLinking.expriments.Features" scope="prototype">
-        <constructor-arg>
+    <bean id="confidenceBasedTrainer" class="org.roc.wim.entityLinking.expriments.expriment2.ConfidenceBasedTrainer" scope="prototype">
+        <constructor-arg index="0" value="LibSVM"/>
+        <constructor-arg index="1">
             <list>
                 <value>PriorityProbability</value>
                 <value>ContextSimilarity</value>

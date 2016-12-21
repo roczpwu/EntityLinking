@@ -19,12 +19,17 @@ import java.util.*;
  */
 @Service
 public class DictionaryBL extends BaseBL {
+
+    public static final int CandidateCount = 10;
+
     @Autowired
     private DictionaryDAO dictionaryDAO;
     @Autowired
     private PageBL pageBL;
     @Autowired
     private RedirectBL redirectBL;
+    @Autowired
+    private Title2IdCache title2IdCache;
 
     @PostConstruct
     public void init() {
@@ -36,11 +41,14 @@ public class DictionaryBL extends BaseBL {
      * @param name 指称
      * @return 候选实体列表
      */
-    public List<Dictionary> getCandidateTitles(String name) {
-        dictionaryDAO.where(Dictionary.NameUpperCase + "='"+ StringUtil.mysqlEscapeStr(name)+"'");
+    public List<Candidate> getCandidateTitles(String name, boolean caseSensitive) {
+        if (!caseSensitive)
+            dictionaryDAO.where(Dictionary.NameUpperCase + "='"+ StringUtil.mysqlEscapeStr(name.toUpperCase())+"'");
+        else
+            dictionaryDAO.where(Dictionary.Name + "='"+ StringUtil.mysqlEscapeStr(name)+"'");
         List<BaseDTO> dictionaryList = dictionaryDAO.all();
         Set<String> pageTitleSet = new HashSet<>();
-        List<Dictionary> result = new ArrayList<>();
+        List<Candidate> result = new ArrayList<>();
         for (BaseDTO item : dictionaryList) {
             Dictionary dictionary = (Dictionary) item;
             Page targetPage = null;
@@ -55,11 +63,19 @@ public class DictionaryBL extends BaseBL {
                 dictionary.setWikiTitle(targetPage.getPage_title());
             }
             if (!pageTitleSet.contains(dictionary.getWikiTitle())) {
-                result.add(dictionary);
+                Candidate candidate = new Candidate();
+                candidate.setName(dictionary.getName());
+                candidate.setWikiTitle(dictionary.getWikiTitle());
+                candidate.setProbOfNameToEntity(dictionary.getProbOfNameToEntity());
+                Integer entityId = title2IdCache.get(dictionary.getWikiTitle());
+                if (entityId == null) continue;
+                candidate.setEntityId(entityId);
+                result.add(candidate);
                 pageTitleSet.add(dictionary.getWikiTitle());
             }
         }
         Collections.sort(result, (o1, o2) -> o1.getProbOfNameToEntity()-o2.getProbOfNameToEntity()>0.0f?-1:1);
+        if (result.size()>CandidateCount) result = result.subList(0, CandidateCount);
         return result;
     }
 }
