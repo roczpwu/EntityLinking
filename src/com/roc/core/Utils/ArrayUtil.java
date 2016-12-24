@@ -19,4 +19,17 @@ public class ArrayUtil {
         return -1;
     }
 
+    public static String implode(Object[] array, String spliter) {
+        StringBuilder sb = new StringBuilder();
+        if (array == null || array.length == 0) return null;
+        for (Object item : array) {
+            sb.append(spliter).append(item);
+        }
+        return sb.substring(spliter.length());
+    }
+
+    public static Object explode(String str, String spliter) {
+        if (str == null) return null;
+        return str.split(spliter);
+    }
 }

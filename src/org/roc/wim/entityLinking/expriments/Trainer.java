@@ -1,16 +1,17 @@
 package org.roc.wim.entityLinking.expriments;
 
+import com.roc.core.Utils.ArrayUtil;
 import com.roc.core.Utils.Stopwatch;
 import org.apache.logging.log4j.LogManager;
 import org.roc.wim.entityLinking.el.doc.Doc;
 import org.roc.wim.entityLinking.el.doc.DocBL;
 import org.roc.wim.entityLinking.el.mention.Mention;
 import org.roc.wim.entityLinking.el.mention.MentionBL;
+import org.roc.wim.entityLinking.el.trainningSet.TrainningSet;
+import org.roc.wim.entityLinking.el.trainningSet.TrainningSetBL;
 import org.roc.wim.entityLinking.ml.ClassifierFactory;
 import org.roc.wim.entityLinking.wiki.doctionary.*;
-import org.roc.wim.entityLinking.wiki.doctionary.Dictionary;
 import org.roc.wim.entityLinking.wiki.page.Title2IdCache;
-import org.roc.wim.entityLinking.wiki.pageAbst.PageAbstBL;
 import org.roc.wim.entityLinking.wiki.pageAbst.PageAbstCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import weka.classifiers.Classifier;
@@ -31,7 +32,9 @@ public abstract class Trainer {
     private Instances instances;
     private Set<Integer> labeledSet;
     private Set<Integer> unLabeledSet;
+    private Instances schemaDataset;
     private static final int WEIGH = 1;
+    private Classifier classifier = null;
 
     @Autowired
     protected Features features;
@@ -47,6 +50,8 @@ public abstract class Trainer {
     private Title2IdCache title2IdCache;
     @Autowired
     private MentionBL mentionBL;
+    @Autowired
+    private TrainningSetBL trainningSetBL;
 
     public Trainer(String model, String[] featureNames) {
         this.model = model;
@@ -54,9 +59,10 @@ public abstract class Trainer {
         this.labeledSet = new HashSet<>();
         this.unLabeledSet = new HashSet<>();
         this.features = new Features();
+        this.schemaDataset = createDataSet(0);
     }
 
-    public void initTrainSet(int size) {
+    public void initTrainSet(int size, boolean fromPrepareData) {
         Stopwatch st = new Stopwatch();
         // 洗牌算法选出size个训练样例
         int totalCount = dataSet.getTrainMentions().size();
@@ -76,13 +82,42 @@ public abstract class Trainer {
         for (int i = 0; i < size; i++) {
             mentionList.add(dataSet.getTrainMentions().get(sequences[i]));
         }
-        List<Instance> instanceList = generateInstances(mentionList);
+        List<Instance> instanceList;
+        if (fromPrepareData) {
+            List<Integer> mentionIdList = new ArrayList<>();
+            for (Mention mention : mentionList)
+                mentionIdList.add(mention.getId());
+            instanceList = generateInstancesByMentionId(mentionIdList);
+        } else {
+            instanceList = generateInstances(mentionList);
+        }
         this.instances = createDataSet(instanceList.size());
         for (Instance instance : instanceList) {
             instances.add(instance);
         }
         logger.info("finished to initTrainSet, time cost=" + st.stopAndGetFormattedTime());
         logger.info(instances.numInstances() + " instances loaded.");
+    }
+
+    private List<Instance> generateInstancesByMentionId(List<Integer> mentionIdList) {
+        List<TrainningSet> trainningSetList = new ArrayList<>();
+        String idsStr = "";
+        for (int mentionId : mentionIdList)
+            idsStr=idsStr+mentionId+", ";
+        idsStr = idsStr.substring(0, idsStr.length()-2);
+        List list = trainningSetBL.getListByCondition(TrainningSet.MentionId+" in ("+idsStr+")");
+        trainningSetList.addAll(list);
+        List<Instance> instanceList = new ArrayList<>();
+        for (TrainningSet trainningSet : trainningSetList) {
+            double[] values = new double[this.featureNames.length+1];
+            float[] feature_values = features.generateFeatureVector(trainningSet);
+            values[0] = trainningSet.getIsCorrect();
+            for (int i = 0; i < feature_values.length; i++)
+                values[i+1] = feature_values[i];
+            Instance instance = new Instance(WEIGH, values);
+            instanceList.add(instance);
+        }
+        return instanceList;
     }
 
     private List<Instance> generateInstances(List<Mention> mentionList) {
@@ -165,7 +200,7 @@ public abstract class Trainer {
     }
 
     public Classifier train() {
-        Classifier classifier = ClassifierFactory.create(model);
+        this.classifier = ClassifierFactory.create(model);
         if(classifier instanceof LibSVM) {
             logger.info("LibSVM.ProbabilityEstimates = "+((LibSVM) classifier).getProbabilityEstimates());
             ((LibSVM) classifier).setProbabilityEstimates(true);
@@ -180,5 +215,33 @@ public abstract class Trainer {
         }
         logger.info("finished to buildClassifier, time cost=" + st.stopAndGetFormattedTime());
         return classifier;
+    }
+
+    // 在验证集上做验证
+    public float validate() throws Exception {
+        Integer[] validateMentionIds = new Integer[dataSet.getValidateMentions().size()];
+        for (int i = 0; i < dataSet.getValidateMentions().size(); i++) {
+            validateMentionIds[i] = dataSet.getTestMentions().get(i).getId();
+        }
+        String idsStr = ArrayUtil.implode(validateMentionIds, ", ");
+        List trainningSetList = trainningSetBL.getListByCondition(TrainningSet.MentionId+" in ("+idsStr+")");
+        Map<Integer, List<TrainningSet>> trainningMap = new HashMap<>();
+        for (Object item : trainningSetList) {
+            TrainningSet trainningSet = (TrainningSet) item;
+            if (!trainningMap.containsKey(trainningSet.getMentionId()))
+                trainningMap.put(trainningSet.getMentionId(), new ArrayList<>());
+            trainningMap.get(trainningSet.getMentionId()).add(trainningSet);
+        }
+        int total = trainningMap.size();
+        int correct = 0;
+        for (Integer mentionId : trainningMap.keySet()) {
+            List<TrainningSet> list = trainningMap.get(mentionId);
+        }
+
+        double[] values = new double[]{-1, 0.963415, 0.283582, 1.0, 1.0, 1.0, 0.0717826, 0.666101};
+        Instance instance = new Instance(WEIGH, values);
+        instance.setDataset(schemaDataset);
+        double[] result = this.classifier.distributionForInstance(instance);
+        return (float) result[1];
     }
 }

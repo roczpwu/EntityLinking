@@ -3,6 +3,7 @@ package org.roc.wim.entityLinking.expriments;
 import org.roc.wim.entityLinking.caculateModel.entity_entity_similarity.EntityDiceSimilarityModel;
 import org.roc.wim.entityLinking.caculateModel.entity_entity_similarity.EntityLinkSimilarityModel;
 import org.roc.wim.entityLinking.caculateModel.mention_entity_similarity.*;
+import org.roc.wim.entityLinking.el.trainningSet.TrainningSet;
 import org.roc.wim.entityLinking.utils.StanfordUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -70,6 +71,30 @@ public class Features {
                 values[i] = entityDiceSimilarityModel.calcSimilarity(title, contextMentions);
             } else if (EntityLink.equals(featureNames[i])) {
                 values[i] = entityLinkSimilarityModel.calcSimilarity(title, contextMentions);
+            } else  {
+                throw new RuntimeException("no mapped feature");
+            }
+        }
+        return values;
+    }
+
+    public float[] generateFeatureVector(TrainningSet trainningSet) {
+        float[] values = new float[featureNames.length];
+        for (int i = 0; i < featureNames.length; i++) {
+            if (PriorityProbability.equals(featureNames[i])) {
+                values[i] = trainningSet.getPriorityProbability();
+            } else if (ContextSimilarity.equals(featureNames[i])) {
+                values[i] = trainningSet.getContextSimilarity();
+            } else if (EditDistance.equals(featureNames[i])) {
+                values[i] = trainningSet.getEditDistance();
+            } else if (MentionContainTitle.equals(featureNames[i])) {
+                values[i] = trainningSet.getMentionContainTitle();
+            } else if (TitleContainsMention.equals(featureNames[i])) {
+                values[i] = trainningSet.getTitleContainsMention();
+            } else if (EntityDice.equals(featureNames[i])) {
+                values[i] = trainningSet.getEntityDice();
+            } else if (EntityLink.equals(featureNames[i])) {
+                values[i] = trainningSet.getEntityLink();
             } else  {
                 throw new RuntimeException("no mapped feature");
             }

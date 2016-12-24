@@ -58,6 +58,7 @@
       <root url="jar://$PROJECT_DIR$/extra/stanford-corenlp-3.6.0.jar!/" />
       <root url="jar://$PROJECT_DIR$/extra/weka.jar!/" />
       <root url="jar://$PROJECT_DIR$/extra/weka-src.jar!/" />
+      <root url="jar://$PROJECT_DIR$/extra/libsvm.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
