@@ -5,8 +5,10 @@ import org.apache.logging.log4j.Logger;
 import org.roc.wim.entityLinking.BeanFactory;
 import org.roc.wim.entityLinking.el.doc.Doc;
 import org.roc.wim.entityLinking.el.doc.DocBL;
+import org.roc.wim.entityLinking.el.doc.DocCache;
 import org.roc.wim.entityLinking.el.mention.Mention;
 import org.roc.wim.entityLinking.el.mention.MentionBL;
+import org.roc.wim.entityLinking.el.mention.MentionCache;
 import org.roc.wim.entityLinking.el.trainningSet.TrainningSet;
 import org.roc.wim.entityLinking.el.trainningSet.TrainningSetBL;
 import org.roc.wim.entityLinking.expriments.Features;
@@ -29,8 +31,9 @@ public class TrainningSetExtracter {
 
     public static void main(String[] args) {
         MentionBL mentionBL = (MentionBL) BeanFactory.getBean("mentionBL");
+        MentionCache mentionCache = (MentionCache) BeanFactory.getBean("mentionCache");
         CandidateCache candidateCache = (CandidateCache) BeanFactory.getBean("candidateCache");
-        DocBL docBL = (DocBL) BeanFactory.getBean("docBL");
+        DocCache docCache = (DocCache) BeanFactory.getBean("docCache");
         PageAbstCache pageAbstCache = (PageAbstCache) BeanFactory.getBean("pageAbstCache");
         Features features = (Features) BeanFactory.getBean("features");
         features.init(new String[]{"PriorityProbability", "ContextSimilarity", "EditDistance",
@@ -42,12 +45,11 @@ public class TrainningSetExtracter {
             String mentionName = mention.getName();
             String entityTitle = mention.getWikiTitle();
             List<Candidate> candidateList = candidateCache.get(mentionName);
-            Doc doc = (Doc) docBL.get(mention.getDocId());
+            Doc doc = docCache.get(mention.getDocId());
             String mentionContext = doc.getContent();
             //上下文中的其他mention，取5个
             int contextMentionCount = 5;
-            List contextMentionList = mentionBL.getListByCondition(Mention.DocId+" = '"+doc.getId()+"' and "+Mention.EntityId+" >'0' and "+Mention.NeType+" != 'MISC'");
-            Collections.sort(contextMentionList, (o1, o2) -> ((Mention)o1).getSeqInDoc()-((Mention)o2).getSeqInDoc());
+            List contextMentionList = mentionCache.get(doc.getId());
             int index = 0;
             for (int j = 0; j < contextMentionList.size(); j++) {
                 Mention _mention = (Mention) contextMentionList.get(j);
@@ -90,7 +92,7 @@ public class TrainningSetExtracter {
                 trainningSet.setEntityLink(feature_values[6]);
                 if (entityTitle.equals(candidate.getWikiTitle())) trainningSet.setIsCorrect(1);  // 正例
                 else trainningSet.setIsCorrect(0);                                               // 反例
-                trainningSetBL.save(trainningSet);
+                //trainningSetBL.save(trainningSet);
             }
             logger.info((i+1)+" mentions completed, total "+ list.size());
         }

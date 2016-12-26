@@ -39,7 +39,7 @@ public class DataSet {
     private void init() {
         List<BaseDTO> list = mentionBL.getListByCondition(Mention.DocId+"<='"+trainDocCount+"' and "+Mention.NeType+" != 'MISC' and "+Mention.EntityId+" > '0'");
         trainMentions.addAll(list.stream().map(item -> (Mention) item).collect(Collectors.toList()));
-        mentionBL.getListByCondition(Mention.DocId+">'"+trainDocCount+"' and "+Mention.DocId+" <= '"+(trainDocCount+validateDocCount)+"' and "+Mention.NeType+" != 'MISC' and "+Mention.EntityId+" > '0'");
+        list = mentionBL.getListByCondition(Mention.DocId+">'"+trainDocCount+"' and "+Mention.DocId+" <= '"+(trainDocCount+validateDocCount)+"' and "+Mention.NeType+" != 'MISC' and "+Mention.EntityId+" > '0'");
         validateMentions.addAll(list.stream().map(item -> (Mention) item).collect(Collectors.toList()));
         list = mentionBL.getListByCondition(Mention.DocId+">'"+(trainDocCount+validateDocCount)+"' and "+Mention.NeType+" != 'MISC' and "+Mention.EntityId+" > '0'");
         testMentions.addAll(list.stream().map(item -> (Mention) item).collect(Collectors.toList()));

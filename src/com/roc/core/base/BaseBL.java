@@ -87,7 +87,7 @@ public abstract class BaseBL {
      * 插入/更新多条记录
      * 取决于DTO状态
      */
-    public int save(List<BaseDTO> dtoList) {
+    public int save(List dtoList) {
         return dao.save(dtoList);
     }
 

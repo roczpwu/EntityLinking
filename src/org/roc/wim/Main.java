@@ -9,6 +9,8 @@ import org.roc.wim.entityLinking.expriments.Features;
 import org.roc.wim.entityLinking.expriments.Trainer;
 import org.roc.wim.entityLinking.expriments.expriment2.ConfidenceBasedTrainer;
 import org.roc.wim.entityLinking.utils.StanfordUtil;
+import org.roc.wim.entityLinking.wiki.doctionary.Candidate;
+import org.roc.wim.entityLinking.wiki.doctionary.CandidateCache;
 import org.roc.wim.entityLinking.wiki.doctionary.DictionaryBL;
 import weka.classifiers.Classifier;
 
@@ -24,11 +26,15 @@ public class Main {
     public static void main(String[] args) throws Exception {
 
         ConfidenceBasedTrainer trainer = (ConfidenceBasedTrainer) BeanFactory.getBean("confidenceBasedTrainer");
-        trainer.initTrainSet(10000, true);
+        trainer.initTrainSet(2000, true);
         System.out.println(trainer);
         Classifier classifier = trainer.train();
         System.out.println(classifier);
         trainer.validate();
+
+//        CandidateCache cache = (CandidateCache) BeanFactory.getBean("candidateCache");
+//        List<Candidate> list = cache.get("European Union");
+//        System.out.println(list);
 
 //        EntityLinkSimilarityCache entityLinkSimilarityCache = (EntityLinkSimilarityCache) BeanFactory.getBean("entityLinkSimilarityCache");
 //        System.out.println(entityLinkSimilarityCache.get(9878520, 486042));//Chang_Yu-sheng   A-mei

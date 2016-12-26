@@ -19,7 +19,7 @@ public class EntityDiceSimilarityCache extends BaseCache<String, Float> {
     private EntityDiceSimilarityModel entityDiceSimilarityModel;
 
     public EntityDiceSimilarityCache() {
-        super(10000);
+        super(1000000);
     }
 
     public float get(int entityId1, int entityId2) {

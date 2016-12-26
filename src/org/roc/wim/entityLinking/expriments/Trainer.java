@@ -5,8 +5,10 @@ import com.roc.core.Utils.Stopwatch;
 import org.apache.logging.log4j.LogManager;
 import org.roc.wim.entityLinking.el.doc.Doc;
 import org.roc.wim.entityLinking.el.doc.DocBL;
+import org.roc.wim.entityLinking.el.doc.DocCache;
 import org.roc.wim.entityLinking.el.mention.Mention;
 import org.roc.wim.entityLinking.el.mention.MentionBL;
+import org.roc.wim.entityLinking.el.mention.MentionCache;
 import org.roc.wim.entityLinking.el.trainningSet.TrainningSet;
 import org.roc.wim.entityLinking.el.trainningSet.TrainningSetBL;
 import org.roc.wim.entityLinking.ml.ClassifierFactory;
@@ -43,13 +45,13 @@ public abstract class Trainer {
     @Autowired
     private CandidateCache candidateCache;
     @Autowired
-    private DocBL docBL;
+    private DocCache docCache;
     @Autowired
     private PageAbstCache pageAbstCache;
     @Autowired
     private Title2IdCache title2IdCache;
     @Autowired
-    private MentionBL mentionBL;
+    private MentionCache mentionCache;
     @Autowired
     private TrainningSetBL trainningSetBL;
 
@@ -129,11 +131,11 @@ public abstract class Trainer {
             String mention = dataSet.getTrainMentions().get(i).getName();
             String title = dataSet.getTrainMentions().get(i).getWikiTitle();
             List<Candidate> candidateList = candidateCache.get(mention);
-            Doc doc = (Doc) docBL.get(dataSet.getTrainMentions().get(i).getDocId());
+            Doc doc = docCache.get(dataSet.getTrainMentions().get(i).getDocId());
             String mentionContext = doc.getContent();
             //上下文中的其他mention，取5个
             int contextMentionCount = 5;
-            List contextMentionList = mentionBL.getListByCondition(Mention.DocId+" = '"+doc.getId()+"' and "+Mention.EntityId+" >'0' and "+Mention.NeType+" != 'MISC'");
+            List contextMentionList = mentionCache.get(doc.getId());
             Collections.sort(contextMentionList, (o1, o2) -> ((Mention)o1).getSeqInDoc()-((Mention)o2).getSeqInDoc());
             int index = 0;
             for (int j = 0; j < contextMentionList.size(); j++) {
@@ -221,7 +223,7 @@ public abstract class Trainer {
     public float validate() throws Exception {
         Integer[] validateMentionIds = new Integer[dataSet.getValidateMentions().size()];
         for (int i = 0; i < dataSet.getValidateMentions().size(); i++) {
-            validateMentionIds[i] = dataSet.getTestMentions().get(i).getId();
+            validateMentionIds[i] = dataSet.getValidateMentions().get(i).getId();
         }
         String idsStr = ArrayUtil.implode(validateMentionIds, ", ");
         List trainningSetList = trainningSetBL.getListByCondition(TrainningSet.MentionId+" in ("+idsStr+")");
@@ -234,14 +236,49 @@ public abstract class Trainer {
         }
         int total = trainningMap.size();
         int correct = 0;
+        int missHintCount = 0;
         for (Integer mentionId : trainningMap.keySet()) {
             List<TrainningSet> list = trainningMap.get(mentionId);
+            String mentionName = list.get(0).getName();
+            int correctedEntityId = -1;
+            String correntEntityName = null;
+            int calcEntityId = -1;
+            String calcEntityName = null;
+            double tmpProb = 0.0f;
+            for (TrainningSet trainningSet : list) {
+                if (trainningSet.getIsCorrect() == 1) {
+                    correctedEntityId = trainningSet.getEntityId();
+                    correntEntityName = trainningSet.getTitle();
+                }
+                float[] feature_values = features.generateFeatureVector(trainningSet);
+                double[] values = new double[feature_values.length+1];
+                for (int i = 1; i < values.length; i++)
+                    values[i] = feature_values[i-1];
+                values[0] = -1;
+                Instance instance = new Instance(WEIGH, values);
+                instance.setDataset(schemaDataset);
+                double[] result = this.classifier.distributionForInstance(instance);
+                if (result[1] > tmpProb) {
+                    calcEntityId = trainningSet.getEntityId();
+                    calcEntityName = trainningSet.getTitle();
+                    tmpProb = result[1];
+                }
+            }
+            if (calcEntityId == correctedEntityId) {
+                correct++;
+                logger.info("[correct] [mention id] " + mentionId + " | [mention name]" + mentionName + " => [entity id] " + calcEntityId + " | [entity name] " + calcEntityName);
+            } else {
+                logger.info("[wrong] [mention id] " + mentionId + " | [mention name]" + mentionName + " => [entity id] " + calcEntityId + " | [entity name] " + calcEntityName);
+                if (correctedEntityId > 0)
+                    logger.info("====>[rectify] [entity id] " + correctedEntityId + " | [entity name] " + correntEntityName);
+                else {
+                    missHintCount++;
+                    logger.info("====>do not hint the correct candidate ");
+                }
+            }
         }
-
-        double[] values = new double[]{-1, 0.963415, 0.283582, 1.0, 1.0, 1.0, 0.0717826, 0.666101};
-        Instance instance = new Instance(WEIGH, values);
-        instance.setDataset(schemaDataset);
-        double[] result = this.classifier.distributionForInstance(instance);
-        return (float) result[1];
+        logger.info(missHintCount + " mentions do not hint the correct candidate ");
+        logger.info(correct + " / " + total + " correct rate");
+        return correct*1.0f/total;
     }
 }

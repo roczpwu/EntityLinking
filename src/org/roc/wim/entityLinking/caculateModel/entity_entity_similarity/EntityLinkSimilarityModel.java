@@ -73,7 +73,8 @@ public class EntityLinkSimilarityModel {
      * @return
      */
     public float calcSimilarity(String title, String[] mentions) {
-        int pageId = title2IdCache.get(title);
+        Integer pageId = title2IdCache.get(title);
+        if (pageId == null) return 0.0f;
         return calcSimilarity(pageId, mentions);
     }
 }

@@ -17,7 +17,7 @@ public class EntityLinkSimilarityCache extends BaseCache<String, Float> {
     private EntityLinkSimilarityModel entityLinkSimilarityModel;
 
     public EntityLinkSimilarityCache() {
-        super(10000);
+        super(1000000);
     }
 
     public float get(int entityId1, int entityId2) {

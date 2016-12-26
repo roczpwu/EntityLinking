@@ -24,6 +24,6 @@ public class CandidateCache extends BaseCache<String, List<Candidate>> {
 
     @Override
     protected List<Candidate> getDirectly(String key) {
-        return dictionaryBL.getCandidateTitles(key, true);
+        return dictionaryBL.getCandidateTitles(key);
     }
 }

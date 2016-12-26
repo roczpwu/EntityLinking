@@ -15,7 +15,7 @@
         <constructor-arg index="0" value="LibSVM"/>
         <constructor-arg index="1">
             <list>
-                <value>PriorityProbability</value>
+                <!--<value>PriorityProbability</value>-->
                 <value>ContextSimilarity</value>
                 <value>EditDistance</value>
                 <value>MentionContainTitle</value>

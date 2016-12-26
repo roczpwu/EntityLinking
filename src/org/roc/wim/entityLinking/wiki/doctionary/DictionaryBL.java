@@ -25,6 +25,8 @@ public class DictionaryBL extends BaseBL {
     @Autowired
     private DictionaryDAO dictionaryDAO;
     @Autowired
+    private CandidateBL candidateBL;
+    @Autowired
     private PageBL pageBL;
     @Autowired
     private RedirectBL redirectBL;
@@ -41,14 +43,19 @@ public class DictionaryBL extends BaseBL {
      * @param name 指称
      * @return 候选实体列表
      */
-    public List<Candidate> getCandidateTitles(String name, boolean caseSensitive) {
-        if (!caseSensitive)
-            dictionaryDAO.where(Dictionary.NameUpperCase + "='"+ StringUtil.mysqlEscapeStr(name.toUpperCase())+"'");
-        else
-            dictionaryDAO.where(Dictionary.Name + "='"+ StringUtil.mysqlEscapeStr(name)+"'");
+    public List<Candidate> getCandidateTitles(String name) {
+        List<Candidate> result = new ArrayList<>();
+        // 先从el.entityname中查
+        List entityNameList = candidateBL.getListByCondition(Candidate.Name + " = '"+name+"'");
+        if (entityNameList.size() > 0) {
+            Collections.sort(entityNameList, (o1, o2) -> ((Candidate)o1).getProbOfNameToEntity()-((Candidate)o2).getProbOfNameToEntity()>0.0f?-1:1);
+            if (entityNameList.size()>CandidateCount) entityNameList = entityNameList.subList(0, CandidateCount);
+            return entityNameList;
+        }
+        // el.entityname中不存在，则直接从wiki.dictionary中查
+        dictionaryDAO.where(Dictionary.Name + "='"+ StringUtil.mysqlEscapeStr(name)+"'");
         List<BaseDTO> dictionaryList = dictionaryDAO.all();
         Set<String> pageTitleSet = new HashSet<>();
-        List<Candidate> result = new ArrayList<>();
         for (BaseDTO item : dictionaryList) {
             Dictionary dictionary = (Dictionary) item;
             Page targetPage = null;
@@ -75,6 +82,9 @@ public class DictionaryBL extends BaseBL {
             }
         }
         Collections.sort(result, (o1, o2) -> o1.getProbOfNameToEntity()-o2.getProbOfNameToEntity()>0.0f?-1:1);
+        for (int i = 0; i < result.size(); i++)
+            result.get(i).setSeq(i);
+        candidateBL.save(result);
         if (result.size()>CandidateCount) result = result.subList(0, CandidateCount);
         return result;
     }
